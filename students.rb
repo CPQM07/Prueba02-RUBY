@@ -2,45 +2,50 @@ public def cyan; "\e[36m#{self}\e[0m" end
 public def red; "\e[31m#{self}\e[0m" end
 public def green; "\e[32m#{self}\e[0m" end
 
+#read file
 puts "Welcome, loading data... *.csv"
-
+@students = [] 
 File.open('data.csv', 'r') do |file| 
     data = file.readlines.map(&:chomp)
-    students = [] 
     data.each do |student, i|
-        students.push(student.split(', '))
+        @students.push(student.split(', '))
     end
+end
+#end read file
 
-    def average(student_name, score)
-        file = File.open(student_name, 'w')
-        file.puts "The student #{student_name} has an average of: #{score}"
-        file.close
-    end
-    
-    def check_approved(minimum_mark=5)
-        students.each do |student|
-            addition = 0
-            student.drop(1).each do |calification|
-                number = calification.to_i
-                addition += number
-            end
-            average = addition/5
-            puts "Student #{student[0]} approved with average: #{average}" if average > minimum_mark
+#puts students
+
+#methods 
+def average(student_name, score)
+    file = File.open(student_name, 'w')
+    file.puts "The student #{student_name} has an average of: #{score}"
+    file.close
+end
+
+def check_approved(minimum_mark=nil)
+    puts "The minimum mark was set in: #{minimum_mark}"
+    @students.each do |student|
+        addition = 0
+        student.drop(1).each do |calification|
+            number = calification.to_i
+            addition += number
         end
+        average = addition/5
+        puts "Student #{student[0]} approved with average: #{average}" if average > minimum_mark
     end
-     
+end
+#end methods
 
-opcion = 0
-while opcion != 4 do
-
-puts "\nChoose your option:"
-print "[1] Resumes - [2] Absences - [3] Approved students - [4] Exit\n".green
-
+#menu
+option = 0
+while option != 4 do
+    puts "\nChoose your option:".red
+    print "[1] Resumes - [2] Absences - [3] Approved students - [4] Exit\n".green
     option = gets.chomp.to_i
     case option
         when 1
             puts "Generating student's average...".cyan
-            students.each do |student|
+            @students.each do |student|
                 addition = 0
                 student.drop(1).each do |calification|
                     number = calification.to_f
@@ -49,11 +54,10 @@ print "[1] Resumes - [2] Absences - [3] Approved students - [4] Exit\n".green
                 puts "Student: #{student[0]} / Average: #{addition/5}".cyan
                 average(student[0], addition/5).cyan
             end
-
         when 2
             puts "Generating student's absences...".cyan
             total = 0
-            students.each do |student|
+            @students.each do |student|
                 count = 0
                 student.drop(1).each do |absence|
                     count += 1 and total += 1 if absence == 'A'
@@ -64,8 +68,12 @@ print "[1] Resumes - [2] Absences - [3] Approved students - [4] Exit\n".green
 
         when 3
             puts "Generating approved students...".cyan
-            check_approved
-        end    
+            puts "Please give us a number"
+            number = gets.chomp.to_i
+            check_approved(number).green
+        
+        when 4
+            puts "Thanks, see you later"
+        end
     end
-
-end
+#end menu
